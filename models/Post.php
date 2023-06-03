@@ -37,10 +37,12 @@ class Post extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['description', 'content'], 'string'],
-            [['date'], 'safe'],
-            [['viewed', 'user_id', 'status', 'category_id'], 'integer'],
-            [['title', 'image'], 'string', 'max' => 255],
+            [['title', 'description', 'content'], 'required'],
+            [['title','description','content'], 'string'],
+            [['date'], 'date', 'format'=>'php:Y-m-d'],
+            [['date'], 'default', 'value' => date('y-m-d')],
+            [['title'], 'string', 'max' => 255],
+            [['category_id'], 'number']
         ];
     }
 
@@ -81,5 +83,22 @@ class Post extends \yii\db\ActiveRecord
     public function getPostTags()
     {
         return $this->hasMany(PostTag::class, ['post_id' => 'id']);
+    }
+
+    public function getCategory()
+    {
+        return $this->hasOne(Category::className(), ['id' => 'category_id']);
+    }
+
+    public function saveCategory($category_id)
+    {
+        $category = Category::findOne($category_id);
+        if($category)
+
+        {
+            $this->link('category', $category);
+            return true;
+        }
+
     }
 }

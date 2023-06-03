@@ -4,10 +4,12 @@ namespace app\modules\admin\controllers;
 
 use app\models\Post;
 use app\models\PostSearch;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-
+use app\models\Category;
+use Yii;
 /**
  * PostController implements the CRUD actions for Post model.
  */
@@ -130,5 +132,29 @@ class PostController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionSetCategory($id)
+    {
+        $post = $this->findModel(($id));
+        $selectedCategory = $post->category->id;
+        $categories = ArrayHelper::map(Category::find()->all(), 'id', 'title');
+
+        if(Yii::$app->request->isPost)
+        {
+            $category = Yii::$app->request->post('category');
+            if($post->saveCategory($category))
+            {
+                return $this->redirect(['view', 'id' => $post->id]);
+            }
+
+
+        }
+
+        return $this->render('category', [
+            'post' => $post,
+            'selectedCategory' => $selectedCategory,
+            'categories' => $categories
+        ]);
     }
 }

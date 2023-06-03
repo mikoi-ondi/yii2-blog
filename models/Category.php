@@ -40,4 +40,9 @@ class Category extends \yii\db\ActiveRecord
             'title' => 'Title',
         ];
     }
+
+    public function getPosts()
+    {
+        return $this->hasMany(Post::className(), ['category_id' => 'id']);
+    }
 }
