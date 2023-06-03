@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\base\InvalidConfigException;
 
 /**
  * This is the model class for table "tag".
@@ -48,8 +49,15 @@ class Tag extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getPostTags()
+    public function getPost()
     {
-        return $this->hasMany(PostTag::class, ['tag_id' => 'id']);
+        try {
+            return $this->hasMany(Post::className(), ['id' => 'post_id'])
+                ->viaTable('post_tag', ['tag_id' => 'id']);
+        } catch (InvalidConfigException $e) {
+                //TODO: отлов ошибок
+        }
     }
+
+
 }

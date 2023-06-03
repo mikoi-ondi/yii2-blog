@@ -4,6 +4,7 @@ namespace app\modules\admin\controllers;
 
 use app\models\Post;
 use app\models\PostSearch;
+use app\models\Tag;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -157,4 +158,26 @@ class PostController extends Controller
             'categories' => $categories
         ]);
     }
+
+    public function actionSetTags($id)
+    {
+        $post = $this->findModel($id);
+        $selectedTags = $post->getSelectedTags();
+        $tags = ArrayHelper::map(Tag::find()->all(), 'id', 'title');
+
+        if(Yii::$app->request->isPost)
+        {
+            $tags = Yii::$app->request->post('tags');
+//            var_dump($tags);die;
+            $post->saveTags($tags);
+            return $this->redirect(['view', 'id' => $post->id ]);
+        }
+
+        return $this->render('tags', [
+            'selectedTags' => $selectedTags,
+            'tags' => $tags
+        ]);
+    }
+
+
 }

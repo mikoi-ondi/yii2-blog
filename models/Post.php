@@ -2,7 +2,11 @@
 
 namespace app\models;
 
-use Yii;
+
+use yii\base\InvalidConfigException;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "post".
@@ -21,12 +25,12 @@ use Yii;
  * @property Comment[] $comments
  * @property PostTag[] $postTags
  */
-class Post extends \yii\db\ActiveRecord
+class Post extends ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'post';
     }
@@ -34,7 +38,7 @@ class Post extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['title', 'description', 'content'], 'required'],
@@ -49,7 +53,7 @@ class Post extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -68,9 +72,9 @@ class Post extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Comments]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getComments()
+    public function getComments(): ActiveQuery
     {
         return $this->hasMany(Comment::class, ['post_id' => 'id']);
     }
@@ -78,14 +82,14 @@ class Post extends \yii\db\ActiveRecord
     /**
      * Gets query for [[PostTags]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getPostTags()
+    public function getPostTags(): ActiveQuery
     {
         return $this->hasMany(PostTag::class, ['post_id' => 'id']);
     }
 
-    public function getCategory()
+    public function getCategory(): ActiveQuery
     {
         return $this->hasOne(Category::className(), ['id' => 'category_id']);
     }
@@ -94,11 +98,46 @@ class Post extends \yii\db\ActiveRecord
     {
         $category = Category::findOne($category_id);
         if($category)
-
         {
             $this->link('category', $category);
             return true;
         }
 
+    }
+
+    public function getTags()
+    {
+        try {
+            return $this->hasMany(Tag::className(), ['id' => 'tag_id'])
+                ->viaTable('post_tag', ['post_id' => 'id']);
+        } catch (InvalidConfigException $e) {
+            //TODO: отлов ошибок
+        }
+    }
+
+    public function getSelectedTags(): array
+    {
+        $selectedIDs = $this->getTags()->select('id')->asArray()->all();
+
+        return ArrayHelper::getColumn($selectedIDs, 'id');
+    }
+
+    public function saveTags($tags): void
+    {
+        if (is_array($tags))
+        {
+             $this->clearAttachedTags();
+
+             foreach($tags as $tag_id)
+             {
+                 $tag = Tag::findOne($tag_id);
+                 $this->link('tags', $tag);
+             }
+        }
+    }
+
+    public function clearAttachedTags(): void
+    {
+        PostTag::deleteAll(['post_id' => $this->id]);
     }
 }
