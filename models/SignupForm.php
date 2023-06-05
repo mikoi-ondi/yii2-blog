@@ -1,6 +1,7 @@
 <?php
 namespace app\models;
 
+use Yii;
 use yii\base\Model;
 
 class SignupForm extends Model
@@ -19,12 +20,16 @@ class SignupForm extends Model
         ];
     }
 
+
     public function signup()
     {
         if($this->validate())
         {
             $user = new User();
+            $hash = Yii::$app->getSecurity()->generatePasswordHash($this->password, $cost = null);
+            $this->password = $hash;
             $user->attributes = $this->attributes;
+
             return $user->create();
         }
     }

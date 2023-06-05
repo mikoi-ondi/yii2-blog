@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\base\Model;
+use yii\db\ActiveRecord;
 
 /**
  * LoginForm is the model behind the login form.
@@ -23,7 +24,7 @@ class LoginForm extends Model
     /**
      * @return array the validation rules.
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             // username and password are both required
@@ -47,7 +48,7 @@ class LoginForm extends Model
         if (!$this->hasErrors()) {
             $user = $this->getUser();
 
-            if (!$user || !$user->validatePassword($this->password)) {
+            if (!$user || !Yii::$app->getSecurity()->validatePassword($this->password, $user->password)) {
                 $this->addError($attribute, 'Incorrect username or password.');
             }
         }
@@ -68,9 +69,9 @@ class LoginForm extends Model
     /**
      * Finds user by [[username]]
      *
-     * @return User|null
+     * @return array|ActiveRecord
      */
-    public function getUser()
+    public function getUser(): array|ActiveRecord
     {
         if ($this->_user === false) {
             $this->_user = User::findByUsername($this->username);

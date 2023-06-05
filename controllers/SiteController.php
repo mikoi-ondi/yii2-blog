@@ -99,7 +99,7 @@ class SiteController extends Controller
      *
      * @return Response|string
      */
-    public function actionLogin()
+    public function actionLogin(): Response|string
     {
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
@@ -121,18 +121,19 @@ class SiteController extends Controller
      *
      * @return Response
      */
-    public function actionLogout()
+    public function actionLogout(): Response
     {
         Yii::$app->user->logout();
 
         return $this->goHome();
     }
 
-    public function actionSignup()
+    public function actionSignup(): Response|string
     {
         $model = new SignupForm();
         if(Yii::$app->request->isPost)
         {
+
             $model->load(Yii::$app->request->post());
             if($model->signup())
             {
@@ -140,5 +141,22 @@ class SiteController extends Controller
             }
         }
         return $this->render('signup', ['model' => $model]);
+    }
+
+    public function actionTest()
+    {
+        $user = User::findOne(1);
+
+//        echo '<pre>';
+//        var_dump();
+//        echo '</pre>';
+        Yii::$app->user->login($user);
+        if(Yii::$app->user->isGuest)
+        {
+            echo 'Guest';
+        } else {
+            echo 'Authorized';
+        }
+
     }
 }

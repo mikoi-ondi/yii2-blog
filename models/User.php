@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use Yii;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
@@ -23,7 +25,7 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'user';
     }
@@ -31,7 +33,7 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['isAdmin'], 'integer'],
@@ -42,7 +44,7 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -57,9 +59,9 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * Gets query for [[Comments]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getComments()
+    public function getComments(): ActiveQuery
     {
         return $this->hasMany(Comment::class, ['user_id' => 'id']);
     }
@@ -69,22 +71,33 @@ class User extends ActiveRecord implements IdentityInterface
      * @param $id
      * @return IdentityInterface|null
      */
-    public static function findIdentity($id)
+    public static function findIdentity($id): ?IdentityInterface
     {
         return static::findOne($id);
     }
 
-    public static function findByEmail($email)
+    public static function findByEmail($email): array|ActiveRecord|null
     {
         return User::find()->where(['email' => $email])->one();
     }
 
-    public function validatePassword($password)
+
+    /**
+     * @param $token
+     * @param $type
+     * @return IdentityInterface|null
+     */
+    public static function findIdentityByAccessToken($token, $type = null)
     {
-        return $password === $this->password;
+        return static::findOne(['access_token' => $token]);
     }
 
-    public function create()
+    public static function findByUsername($username)
+    {
+        return User::find()->where(['name' => $username])->one();
+    }
+
+    public function create(): bool
     {
         return $this->save(false);
     }
@@ -115,13 +128,8 @@ class User extends ActiveRecord implements IdentityInterface
         //return $this->getAuthKey() === $authKey;
     }
 
-    /**
-     * @param $token
-     * @param $type
-     * @return IdentityInterface|null
-     */
-    public static function findIdentityByAccessToken($token, $type = null)
-    {
-        //return static::findOne(['access_token' => $token]);
-    }
+
+
+
+
 }
