@@ -143,20 +143,5 @@ class SiteController extends Controller
         return $this->render('signup', ['model' => $model]);
     }
 
-    public function actionTest()
-    {
-        $user = User::findOne(1);
 
-//        echo '<pre>';
-//        var_dump();
-//        echo '</pre>';
-        Yii::$app->user->login($user);
-        if(Yii::$app->user->isGuest)
-        {
-            echo 'Guest';
-        } else {
-            echo 'Authorized';
-        }
-
-    }
 }

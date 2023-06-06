@@ -14,7 +14,7 @@ class PostSearch extends Post
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['id', 'viewed', 'user_id', 'status', 'category_id'], 'integer'],

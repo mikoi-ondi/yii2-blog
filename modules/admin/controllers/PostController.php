@@ -73,7 +73,7 @@ class PostController extends Controller
         $model = new Post();
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
+            if ($model->load($this->request->post()) && $model->savePost()) {
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         } else {
@@ -96,7 +96,7 @@ class PostController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+        if ($this->request->isPost && $model->load($this->request->post()) && $model->savePost()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
 

@@ -3,6 +3,7 @@
 namespace app\models;
 
 
+use Yii;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -43,8 +44,8 @@ class Post extends ActiveRecord
         return [
             [['title', 'description', 'content'], 'required'],
             [['title','description','content'], 'string'],
-            [['date'], 'date', 'format'=>'php:Y-m-d'],
-            [['date'], 'default', 'value' => date('y-m-d')],
+            [['date'], 'date', 'format'=>'php:d-m-y'],
+            [['date'], 'default', 'value' => date('d-m-y')],
             [['title'], 'string', 'max' => 255],
             [['category_id'], 'number']
         ];
@@ -139,5 +140,11 @@ class Post extends ActiveRecord
     public function clearAttachedTags(): void
     {
         PostTag::deleteAll(['post_id' => $this->id]);
+    }
+
+    public function savePost()
+    {
+        $this->user_id = Yii::$app->user->id;
+        return $this->save();
     }
 }
