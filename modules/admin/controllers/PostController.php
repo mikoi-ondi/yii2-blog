@@ -2,6 +2,7 @@
 
 namespace app\modules\admin\controllers;
 
+use app\models\ImageUpload;
 use app\models\Post;
 use app\models\PostSearch;
 use app\models\Tag;
@@ -11,6 +12,8 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\models\Category;
 use Yii;
+use yii\web\UploadedFile;
+
 /**
  * PostController implements the CRUD actions for Post model.
  */
@@ -115,7 +118,6 @@ class PostController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
-
         return $this->redirect(['index']);
     }
 
@@ -168,7 +170,6 @@ class PostController extends Controller
         if(Yii::$app->request->isPost)
         {
             $tags = Yii::$app->request->post('tags');
-//            var_dump($tags);die;
             $post->saveTags($tags);
             return $this->redirect(['view', 'id' => $post->id ]);
         }
@@ -178,6 +179,23 @@ class PostController extends Controller
             'tags' => $tags
         ]);
     }
+    public function actionSetImage($id)
+    {
+        $model = new ImageUpload();
+        if(Yii::$app->request->isPost)
+        {
+            $post = $this->findModel($id);
+            $file = UploadedFile::getInstance($model, 'image');
+
+            if($post->saveImage($model->uploadImage($file, $post->image)))
+            {
+                return $this->redirect(['view', 'id' => $post->id]);
+            }
+        };
+        return $this->render('image', ['model' => $model]);
+
+    }
+
 
 
 }

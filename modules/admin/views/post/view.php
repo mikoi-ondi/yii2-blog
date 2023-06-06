@@ -20,6 +20,7 @@ YiiAsset::register($this);
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Set Category', ['set-category', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Set Tag', ['set-tags', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Set Image', ['set-image', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Delete', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [

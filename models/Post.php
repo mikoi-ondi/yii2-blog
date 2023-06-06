@@ -147,4 +147,28 @@ class Post extends ActiveRecord
         $this->user_id = Yii::$app->user->id;
         return $this->save();
     }
+
+    public function saveImage($filename)
+    {
+        $this->image = $filename;
+
+        return $this->save(false);
+    }
+
+    public function getImage()
+    {
+        return ($this->image) ? '/uploads/' . $this->image : '/no-image.png';
+    }
+
+    public function deleteImage()
+    {
+        $imageUploadModel = new ImageUpload();
+        $imageUploadModel->deleteCurrentImage($this->image);
+    }
+
+    public function beforeDelete()
+    {
+        $this->deleteImage();
+        return parent::beforeDelete();
+    }
 }
